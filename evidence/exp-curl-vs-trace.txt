@@ -1,0 +1,12 @@
+EXPERIMENT: could a plain HTTP check have answered the Task 1 question?
+Same URL, measured with curl only:
+
+  attempt1  ttfb=0.267102s  total=0.306945s  bytes=89132  http=307
+  attempt2  ttfb=0.280781s  total=0.307872s  bytes=89132  http=307
+  attempt3  ttfb=0.213605s  total=0.247151s  bytes=89132  http=307
+
+curl's verdict: server responds in ~0.21-0.28s and ships ~87 kB. Nothing to fix here.
+The MCP trace's verdict on the same page (4x CPU, Slow 4G):
+  LCP 1794 ms, of which 33 ms TTFB (1.8%) and 1761 ms render delay (98.2%)
+  -> the bytes arrived early; the browser was busy executing JS instead of painting.
+curl cannot see render delay at all, because render delay happens after curl is done.

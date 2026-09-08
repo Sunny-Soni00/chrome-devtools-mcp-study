@@ -1,0 +1,60 @@
+=== initialize ===
+{"name":"chrome_devtools","title":"Chrome DevTools MCP server","version":"1.8.0"} protocol: 2025-06-18
+=== tools/list ===
+tool count: 29
+click, close_page, drag, emulate, evaluate_script, fill, fill_form, get_console_message, get_network_request, handle_dialog, hover, lighthouse_audit, list_console_messages, list_network_requests, list_pages, navigate_page, new_page, performance_analyze_insight, performance_start_trace, performance_stop_trace, press_key, resize_page, select_page, take_heapsnapshot, take_screenshot, take_snapshot, type_text, upload_file, wait_for
+
+=== tools/call new_page {"url":"http://localhost:8931/"} ===
+(778 ms)
+## Pages
+1: about:blank
+2: Todo board (http://localhost:8931/) [selected]
+
+=== tools/call list_console_messages {"pageId":2,"includeStackTraces":true} ===
+(6 ms)
+## Console messages
+Showing 1-2 of 2 (Page 1 of 1).
+msgid=1 [error] Uncaught (in promise) (0 args)
+  at render (app.js:6:6)
+  --- await ------------------------------
+  at  (app.js:9:1)
+msgid=2 [error] Failed to load resource: the server responded with a status of 404 (Not Found) (0 args)
+Note: stack trace line and column numbers use 1-based indexing
+
+=== tools/call get_console_message {"pageId":2,"msgid":1} ===
+(5 ms)
+ID: 1
+Message: error> Uncaught (in promise)
+### Stack trace
+at render (app.js:6:6)
+--- await ------------------------------
+at  (app.js:9:1)
+Note: line and column numbers use 1-based indexing
+
+=== tools/call get_network_request {"pageId":2,"reqid":3} ===
+(4 ms)
+## Request http://localhost:8931/api/todo-list
+Status: 200
+### Request Headers
+- sec-ch-ua-platform:"Windows"
+- referer:http://localhost:8931/
+- user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/152.0.0.0 Safari/537.36
+- sec-ch-ua:"Chromium";v="152", "Not?A_Brand";v="24", "Google Chrome";v="152"
+- sec-ch-ua-mobile:?0
+- accept:*/*
+- accept-encoding:gzip, deflate, br, zstd
+- accept-language:en-US,en;q=0.9
+- connection:keep-alive
+- host:localhost:8931
+- sec-fetch-dest:empty
+- sec-fetch-mode:cors
+- sec-fetch-site:same-origin
+### Response Headers
+- connection:keep-alive
+- date:Tue, 08 Sep 2026 05:02:08 GMT
+- keep-alive:timeout=5
+- transfer-encoding:chunked
+- cache-control:no-store
+- content-type:application/json
+### Response Body
+{"todos":[{"id":1,"title":"Write MCP assignment","done":false},{"id":2,"title":"Run a perf trace","done":true},{"id":3,"title":"Ship the write-up","done":false}]}

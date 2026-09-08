@@ -1,0 +1,7 @@
+[
+  {"name":"new_page","arguments":{"url":"http://localhost:8931/"}},
+  {"name":"list_console_messages","arguments":{"pageId":2,"types":["error","warn"]}},
+  {"name":"take_snapshot","arguments":{"pageId":2}},
+  {"name":"evaluate_script","arguments":{"pageId":2,"function":"() => ({ rendered: document.querySelectorAll('#list li').length, text: document.getElementById('list').innerText })"}},
+  {"name":"take_screenshot","arguments":{"pageId":2,"filePath":"{{TMP}}/after.png","format":"png"}}
+]

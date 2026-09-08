@@ -1,0 +1,20 @@
+EXPERIMENT: does --redactNetworkHeaders actually protect credentials?
+Setup: emulate injects a FAKE Authorization + Cookie header, then reload and read the
+document request back through get_network_request. Same steps, two server configs.
+(The token below is a fabricated demo value, not a real credential.)
+
+### A) default server config  (npx -y chrome-devtools-mcp@1.8.0 --headless=true --isolated=true)
+## Request http://localhost:8931/
+Status: 200
+- user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/152.0.0.0 Safari/537.36
+- authorization:Bearer FAKE-DEMO-TOKEN-NOT-REAL
+- cookie:session=FAKE-DEMO-SESSION
+- host:localhost:8931
+
+### B) same, plus --redactNetworkHeaders
+## Request http://localhost:8931/
+Status: 200
+- user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/152.0.0.0 Safari/537.36
+- authorization:<redacted>
+- cookie:<redacted>
+- host:localhost:8931

@@ -1,0 +1,5 @@
+[
+  {"name":"new_page","arguments":{"url":"http://localhost:8931/"}},
+  {"name":"list_console_messages","arguments":{"pageId":2,"types":["error","warn"]}},
+  {"name":"list_network_requests","arguments":{"pageId":2,"resourceTypes":["fetch"]}}
+]

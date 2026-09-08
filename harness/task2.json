@@ -1,0 +1,7 @@
+[
+  {"name":"new_page","arguments":{"url":"http://localhost:8931/"}},
+  {"name":"list_console_messages","arguments":{"pageId":2,"includeStackTraces":true}},
+  {"name":"list_network_requests","arguments":{"pageId":2,"resourceTypes":["fetch","xhr","document","script"]}},
+  {"name":"take_snapshot","arguments":{"pageId":2}},
+  {"name":"take_screenshot","arguments":{"pageId":2,"filePath":"{{TMP}}/before.png","format":"png"}}
+]

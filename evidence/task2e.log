@@ -1,0 +1,23 @@
+=== initialize ===
+{"name":"chrome_devtools","title":"Chrome DevTools MCP server","version":"1.8.0"} protocol: 2025-06-18
+=== tools/list ===
+tool count: 29
+click, close_page, drag, emulate, evaluate_script, fill, fill_form, get_console_message, get_network_request, handle_dialog, hover, lighthouse_audit, list_console_messages, list_network_requests, list_pages, navigate_page, new_page, performance_analyze_insight, performance_start_trace, performance_stop_trace, press_key, resize_page, select_page, take_heapsnapshot, take_screenshot, take_snapshot, type_text, upload_file, wait_for
+
+=== tools/call new_page {"url":"http://localhost:8931/"} ===
+(777 ms)
+## Pages
+1: about:blank
+2: Todo board (http://localhost:8931/) [selected]
+
+=== tools/call list_console_messages {"pageId":2,"types":["error","warn"]} ===
+(3 ms)
+## Console messages
+Showing 1-1 of 1 (Page 1 of 1).
+msgid=1 [error] Failed to load resource: the server responded with a status of 404 (Not Found) (0 args)
+
+=== tools/call list_network_requests {"pageId":2,"resourceTypes":["fetch"]} ===
+(2 ms)
+## Network requests
+Showing 1-1 of 1 (Page 1 of 1).
+reqid=3 GET http://localhost:8931/api/todo-list [200]

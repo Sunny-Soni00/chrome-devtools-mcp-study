@@ -1,0 +1,806 @@
+<title>Chrome DevTools MCP Dossier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;600&display=swap">
+
+<style>
+  :root {
+    --paper:      #F5F6F8;
+    --surface:    #FFFFFF;
+    --ink:        #12151B;
+    --muted:      #5A626F;
+    --faint:      #8A919E;
+    --rule:       #DCE0E7;
+    --accent:     #2F5BD7;
+    --accent-dim: #E7EBFA;
+    --good:       #0F7A68;
+    --warn:       #C0521C;
+    --bad:        #A62520;
+    --shadow:     0 1px 2px rgba(18,21,27,.06), 0 8px 24px -16px rgba(18,21,27,.22);
+
+    --measure: 68ch;
+    --s1: .35rem; --s2: .7rem; --s3: 1.1rem; --s4: 1.8rem; --s5: 3rem; --s6: 4.5rem;
+
+    color-scheme: light;
+  }
+  :root:not([data-theme="light"]) { }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:      #101319;
+      --surface:    #171B23;
+      --ink:        #E7EAF0;
+      --muted:      #A2AAB8;
+      --faint:      #767E8C;
+      --rule:       #262C37;
+      --accent:     #7C9BFF;
+      --accent-dim: #1B2440;
+      --good:       #3FBFA5;
+      --warn:       #E68A4E;
+      --bad:        #E3706A;
+      --shadow:     0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:      #101319;
+    --surface:    #171B23;
+    --ink:        #E7EAF0;
+    --muted:      #A2AAB8;
+    --faint:      #767E8C;
+    --rule:       #262C37;
+    --accent:     #7C9BFF;
+    --accent-dim: #1B2440;
+    --good:       #3FBFA5;
+    --warn:       #E68A4E;
+    --bad:        #E3706A;
+    --shadow:     0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+    font-size: 17px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 var(--s4) var(--s6); }
+  .col  { max-width: var(--measure); }
+
+  h1, h2, h3, .ui {
+    font-family: Archivo, "Helvetica Neue", Arial, sans-serif;
+    text-wrap: balance;
+  }
+  .mono, code, pre, .num {
+    font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  /* ---------- masthead ---------- */
+  header.mast {
+    border-bottom: 1px solid var(--rule);
+    padding: var(--s5) 0 var(--s4);
+    display: flex; flex-direction: column; gap: var(--s3);
+  }
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace;
+    font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--faint);
+  }
+  h1 {
+    margin: 0; font-size: clamp(2rem, 5vw, 3.1rem); font-weight: 700;
+    letter-spacing: -.025em; line-height: 1.05;
+  }
+  h1 .mono { font-size: .92em; font-weight: 600; letter-spacing: -.03em; }
+  .standfirst { margin: 0; max-width: var(--measure); font-size: 1.18rem; color: var(--muted); }
+
+  .facts {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1px; background: var(--rule); border: 1px solid var(--rule);
+    margin-top: var(--s2);
+  }
+  .fact { background: var(--surface); padding: var(--s3); }
+  .fact dt {
+    font-family: "JetBrains Mono", monospace; font-size: .68rem;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--faint);
+    margin: 0 0 .3rem;
+  }
+  .fact dd {
+    margin: 0; font-family: Archivo, sans-serif; font-weight: 600;
+    font-size: 1.15rem; font-variant-numeric: tabular-nums; letter-spacing: -.01em;
+  }
+  .fact dd small { display: block; font-weight: 500; font-size: .72rem; color: var(--muted); letter-spacing: 0; }
+
+  /* ---------- sections ---------- */
+  section { padding-top: var(--s5); }
+  h2 {
+    font-size: 1.55rem; font-weight: 700; letter-spacing: -.02em;
+    margin: 0 0 var(--s2); display: flex; align-items: baseline; gap: .6rem;
+  }
+  h2 .tag {
+    font-family: "JetBrains Mono", monospace; font-size: .68rem; font-weight: 400;
+    letter-spacing: .1em; color: var(--faint); text-transform: uppercase;
+  }
+  h3 {
+    font-size: 1.02rem; font-weight: 600; letter-spacing: -.005em;
+    margin: var(--s4) 0 var(--s2);
+  }
+  p { margin: 0 0 var(--s2); }
+  .lede { font-size: 1.06rem; }
+  a { color: var(--accent); text-underline-offset: 2px; }
+  a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  strong { font-weight: 600; }
+  em.term { font-style: normal; font-family: "JetBrains Mono", monospace; font-size: .88em; }
+
+  /* ---------- comparison bars ---------- */
+  .bars { display: flex; flex-direction: column; gap: var(--s2); margin: var(--s3) 0; }
+  .bar-row { display: grid; grid-template-columns: minmax(150px, 210px) 1fr auto; gap: var(--s2); align-items: center; }
+  .bar-name { font-family: "JetBrains Mono", monospace; font-size: .78rem; color: var(--muted); }
+  .bar-track { height: 20px; background: var(--rule); position: relative; }
+  .bar-fill { height: 100%; background: var(--faint); }
+  .bar-fill.is-subject { background: var(--accent); }
+  .bar-val {
+    font-family: "JetBrains Mono", monospace; font-size: .78rem;
+    font-variant-numeric: tabular-nums; color: var(--muted); min-width: 5.5em; text-align: right;
+  }
+
+  /* ---------- the LCP instrument ---------- */
+  .instrument {
+    background: var(--surface); border: 1px solid var(--rule);
+    padding: var(--s4); margin: var(--s3) 0; box-shadow: var(--shadow);
+  }
+  .instrument-head {
+    display: flex; flex-wrap: wrap; justify-content: space-between;
+    align-items: baseline; gap: var(--s2); margin-bottom: var(--s3);
+  }
+  .instrument-head .ui { font-weight: 600; font-size: .95rem; }
+  .instrument-head .cond {
+    font-family: "JetBrains Mono", monospace; font-size: .72rem; color: var(--faint);
+  }
+  .lcp-bar { display: flex; height: 46px; border: 1px solid var(--rule); }
+  .lcp-seg { display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .lcp-seg.ttfb { background: var(--good); }
+  .lcp-seg.render { background: var(--warn); }
+  .lcp-seg span {
+    font-family: "JetBrains Mono", monospace; font-size: .74rem; font-weight: 600;
+    color: #fff; white-space: nowrap; padding: 0 .4rem;
+  }
+  .lcp-key { display: flex; flex-wrap: wrap; gap: var(--s3); margin-top: var(--s2); }
+  .lcp-key div { display: flex; align-items: center; gap: .45rem; font-size: .82rem; color: var(--muted); }
+  .swatch { width: 11px; height: 11px; flex: none; }
+  .swatch.ttfb { background: var(--good); }
+  .swatch.render { background: var(--warn); }
+  .verdict {
+    margin-top: var(--s3); padding-top: var(--s3); border-top: 1px solid var(--rule);
+    font-size: .97rem;
+  }
+
+  /* ---------- terminal ---------- */
+  pre {
+    background: var(--surface); border: 1px solid var(--rule);
+    border-left: 3px solid var(--accent);
+    padding: var(--s3); margin: var(--s2) 0 var(--s3);
+    overflow-x: auto; font-size: .79rem; line-height: 1.6;
+    white-space: pre; tab-size: 2;
+  }
+  pre .c { color: var(--faint); }
+  pre .g { color: var(--good); font-weight: 600; }
+  pre .r { color: var(--bad); font-weight: 600; }
+  pre .w { color: var(--warn); font-weight: 600; }
+  pre b { color: var(--ink); font-weight: 600; }
+  code:not(pre code) {
+    background: var(--accent-dim); color: var(--ink);
+    padding: .08em .34em; font-size: .84em; border-radius: 2px;
+  }
+  figcaption {
+    font-family: "JetBrains Mono", monospace; font-size: .7rem;
+    letter-spacing: .07em; text-transform: uppercase; color: var(--faint);
+    margin-bottom: .45rem;
+  }
+  figure { margin: var(--s3) 0; }
+
+  /* ---------- tables ---------- */
+  .tablewrap { overflow-x: auto; margin: var(--s3) 0; }
+  table { border-collapse: collapse; width: 100%; font-size: .88rem; }
+  th, td { text-align: left; padding: .6rem .8rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th {
+    font-family: Archivo, sans-serif; font-weight: 600; font-size: .72rem;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--faint);
+    border-bottom: 1px solid var(--ink);
+  }
+  td code { font-size: .8rem; }
+  tbody tr:last-child td { border-bottom: none; }
+
+  /* ---------- split ---------- */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s5); margin-top: var(--s3); }
+  @media (max-width: 720px) { .split { grid-template-columns: 1fr; gap: var(--s4); } }
+  .split h3 { margin-top: 0; }
+  .split ul { margin: 0; padding-left: 1.1rem; }
+  .split li { margin-bottom: var(--s2); }
+
+  /* ---------- shots ---------- */
+  .shots { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s3); margin: var(--s3) 0; }
+  @media (max-width: 720px) { .shots { grid-template-columns: 1fr; } }
+  .shot { border: 1px solid var(--rule); background: #fff; }
+  .shot img { display: block; width: 100%; height: auto; }
+  .shot .cap {
+    font-family: "JetBrains Mono", monospace; font-size: .68rem; letter-spacing: .06em;
+    text-transform: uppercase; padding: .5rem .7rem; border-bottom: 1px solid var(--rule);
+    color: var(--muted); background: var(--surface);
+    display: flex; justify-content: space-between; gap: .5rem;
+  }
+  .shot .cap .state { font-weight: 600; }
+  .shot .cap .state.bad  { color: var(--bad); }
+  .shot .cap .state.good { color: var(--good); }
+
+  /* ---------- experiment ---------- */
+  .exp { border-top: 1px solid var(--rule); padding-top: var(--s3); margin-top: var(--s4); }
+  .exp-num {
+    font-family: "JetBrains Mono", monospace; font-size: .7rem; letter-spacing: .12em;
+    color: var(--faint); text-transform: uppercase;
+  }
+  .exp h3 { margin-top: .2rem; }
+  .exp.flag {
+    border: 1px solid var(--warn); border-top-width: 3px;
+    background: var(--surface); padding: var(--s4); box-shadow: var(--shadow);
+  }
+
+  /* ---------- run ---------- */
+  .run { background: var(--surface); border: 1px solid var(--rule); padding: var(--s4); margin-top: var(--s3); }
+  .run pre { border-left-color: var(--good); margin-bottom: var(--s2); }
+
+  .footnote { color: var(--muted); font-size: .9rem; }
+  hr.rule { border: none; border-top: 1px solid var(--rule); margin: var(--s5) 0 0; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    a { transition: color .15s ease; }
+  }
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <div class="eyebrow">Day 9 · Popular but underused · MCP server dossier</div>
+  <h1>Chrome DevTools MCP<br><span class="mono">chrome-devtools-mcp@1.8.0</span></h1>
+  <p class="standfirst">
+    Google's DevTools team ships an MCP server that hands an agent the Performance panel,
+    the Network panel and the Console — not just a browser to click. Everybody installs the
+    browser-driver instead. This is what happened when I actually connected it and used the
+    half nobody uses.
+  </p>
+  <dl class="facts">
+    <div class="fact"><dt>GitHub stars</dt><dd>51,307<small>ChromeDevTools org</small></dd></div>
+    <div class="fact"><dt>Last push</dt><dd>2026-09-08<small>same day I used it</small></dd></div>
+    <div class="fact"><dt>npm / week</dt><dd>1,465,302<small>vs 6.36M for Playwright MCP</small></dd></div>
+    <div class="fact"><dt>Auth &amp; cost</dt><dd>None<small>no key, no account, free</small></dd></div>
+    <div class="fact"><dt>Tools exposed</dt><dd>29<small>3 in <code>--slim</code> mode</small></dd></div>
+  </dl>
+  <p class="footnote" style="margin:0">
+    Source: <a href="https://github.com/ChromeDevTools/chrome-devtools-mcp">github.com/ChromeDevTools/chrome-devtools-mcp</a>
+    · Apache-2.0 · registry id <span class="mono">io.github.ChromeDevTools/chrome-devtools-mcp</span>
+    · figures read live from the GitHub and npm APIs on 2026-09-08
+  </p>
+</header>
+
+<section>
+  <h2>Why it counts as “less used” <span class="tag">Part A</span></h2>
+  <div class="col">
+    <p class="lede">
+      Being honest about this matters more than winning the argument: <strong>it is not
+      obscure.</strong> 1.47 million installs a week is a lot. The case is comparative.
+    </p>
+  </div>
+
+  <div class="bars">
+    <div class="bar-row">
+      <span class="bar-name">@playwright/mcp</span>
+      <span class="bar-track"><span class="bar-fill" style="width:100%"></span></span>
+      <span class="bar-val">6,364,011</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-name">chrome-devtools-mcp</span>
+      <span class="bar-track"><span class="bar-fill is-subject" style="width:23%"></span></span>
+      <span class="bar-val">1,465,302</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-name">server-filesystem</span>
+      <span class="bar-track"><span class="bar-fill" style="width:15%"></span></span>
+      <span class="bar-val">954,129</span>
+    </div>
+  </div>
+  <p class="footnote">npm downloads, week of 2026-08-31 → 09-06, via <span class="mono">api.npmjs.org</span>.</p>
+
+  <div class="col">
+    <p>Three things carry the “less used” claim:</p>
+    <p>
+      <strong>It loses 4.3 : 1 to the obvious pick.</strong> When people decide to let an
+      agent use a browser, they install Playwright. Almost nobody installs a profiler.
+    </p>
+    <p>
+      <strong>It is not a reference server.</strong> The
+      <span class="mono">modelcontextprotocol/servers</span> README does not mention Chrome
+      at all — I grepped it, zero hits. It is vendor-shipped and third-party, exactly the
+      category the brief points at.
+    </p>
+    <p>
+      <strong>It is missing from the marketplace people browse.</strong> Keyword searches on
+      Smithery's registry API for <code>chrome-devtools-mcp</code>, <code>devtools</code> and
+      <code>playwright</code> returned unrelated third-party servers. Smithery's search is
+      fuzzy so I won't call it definitively unlisted — but it isn't findable there the
+      obvious way. Distribution is npm, the official registry, and Chrome's own docs.
+    </p>
+    <p>
+      And the half that <em>is</em> popular is the boring half: the tutorials use
+      <code>navigate_page</code> and <code>click</code> — the Playwright-shaped subset. The
+      <code>performance_*</code>, heap-snapshot and <code>emulate</code> tools, the reason
+      this server exists, are the part nobody touches. Both tasks below live there
+      deliberately.
+    </p>
+  </div>
+</section>
+
+<section>
+  <h2>Setup <span class="tag">Part C1 · nothing to redact</span></h2>
+  <div class="col">
+    <p>
+      One command, project scope. There is <strong>no API key, no OAuth, no account</strong> —
+      this server has no auth surface at all, so there is no secret in this dossier to
+      redact.
+    </p>
+  </div>
+
+<pre><span class="c">$</span> claude mcp add chrome-devtools --scope project -- \
+    npx -y chrome-devtools-mcp@1.8.0 --headless=true --isolated=true</pre>
+
+<figure>
+<figcaption>.mcp.json — committed to the project</figcaption>
+<pre>{
+  "mcpServers": {
+    "chrome-devtools": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@1.8.0", "--headless=true", "--isolated=true"],
+      "env": {}
+    }
+  }
+}</pre>
+</figure>
+
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Piece</th><th>What it actually does</th></tr></thead>
+    <tbody>
+      <tr><td><code>"type": "stdio"</code></td><td>Client spawns the server as a child process and speaks JSON-RPC 2.0 over stdin/stdout. No port, no daemon — the browser dies with the session.</td></tr>
+      <tr><td><code>npx -y</code></td><td>Run without a global install. <code>-y</code> skips the install prompt, which would otherwise hang a stdio server forever waiting on a stdin the protocol is already using.</td></tr>
+      <tr><td><code>@1.8.0</code></td><td><strong>Pinned deliberately.</strong> The docs say <code>@latest</code>. On a tool that spawns a browser and reads every response body, I don't want npx pulling a new major on a random Tuesday.</td></tr>
+      <tr><td><code>--headless=true</code></td><td>No visible window. Turn it off to watch the agent work — genuinely useful when debugging the debugging.</td></tr>
+      <tr><td><code>--isolated=true</code></td><td>Temporary profile, deleted on close. The default is <em class="term">not</em> your everyday Chrome — it's a <strong>persistent</strong> dedicated profile at <code>$HOME/.cache/chrome-devtools-mcp/</code>. So the risk it removes is <em>accumulation</em>: log into staging once and that cookie waits there for the next session.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>The gotcha that actually blocked me</h3>
+  <div class="col">
+    <p>
+      A project-scoped server is inert until the folder is trusted. Straight after adding it,
+      the health check said <span class="mono">⏸ Pending approval</span> — and shipping
+      <code>.claude/settings.json</code> with <code>enabledMcpjsonServers</code> did
+      <em>not</em> change that, because committed approvals are ignored until you run
+      <code>claude</code> in the folder and accept the trust dialog. Once I did:
+    </p>
+  </div>
+
+<pre><span class="c">$</span> claude mcp list
+Checking MCP server health…
+
+chrome-devtools: npx -y chrome-devtools-mcp@1.8.0 --headless=true --isolated=true - <span class="g">✔ Connected</span></pre>
+
+  <div class="col">
+    <p class="footnote">
+      Worth naming as a security point rather than a footnote: that prompt exists so a human
+      vets a server before it runs. Committing the approval trades that review for
+      convenience — fine for a team that already vetted it, wrong as a default.
+    </p>
+    <p>Four smaller ones cost me time, all schema surprises:
+      <code>pageId</code> is a <em class="term">number</em> though <code>list_pages</code>
+      prints it as <span class="mono">1:</span>;
+      <code>viewport</code> is a <em class="term">string</em> <code>"412x915"</code>, not an object;
+      <code>extraHttpHeaders</code> is a JSON <em class="term">string</em>, not an object;
+      and console <code>types</code> wants <code>"warn"</code>, never <code>"warning"</code>.
+    </p>
+  </div>
+</section>
+
+<section>
+  <h2>Task 1 — is this docs site fast on a mid-range phone? <span class="tag">Part C2</span></h2>
+  <div class="col">
+    <p class="lede">
+      A real question with a real answer. Emulate a throttled Android, record a trace across
+      a reload, then drill into the insights — the workflow no other MCP server offers.
+    </p>
+  </div>
+
+  <div class="instrument">
+    <div class="instrument-head">
+      <span class="ui">LCP breakdown · modelcontextprotocol.io/docs</span>
+      <span class="cond">4× CPU throttle · Slow 4G · 412×915</span>
+    </div>
+    <div class="lcp-bar" role="img" aria-label="Largest Contentful Paint of 1794 milliseconds, split into 33 milliseconds time-to-first-byte and 1761 milliseconds render delay.">
+      <div class="lcp-seg ttfb" style="width:1.8%"></div>
+      <div class="lcp-seg render" style="width:98.2%"><span>render delay — 1,761 ms · 98.2%</span></div>
+    </div>
+    <div class="lcp-key">
+      <div><span class="swatch ttfb"></span> TTFB 33 ms · 1.8%</div>
+      <div><span class="swatch render"></span> Render delay 1,761 ms · 98.2%</div>
+      <div style="margin-left:auto"><strong>LCP 1,794 ms</strong> · CLS 0.00</div>
+    </div>
+    <div class="verdict">
+      <strong>The page is not network-bound.</strong> The bytes arrived in 33 ms; the browser
+      then spent 1.76 seconds executing JavaScript instead of painting. The fix direction is
+      “ship less JS, earlier” — not “add a CDN”. The <code>LegacyJavaScript</code> insight
+      then named <strong>24.9 kB</strong> of that as transpiler polyfills for
+      <code>Array.prototype.at</code>, <code>Object.hasOwn</code> and friends: a build-config
+      change with a measurable payoff, found without opening a browser.
+    </div>
+  </div>
+
+<figure>
+<figcaption>evidence/task1b.log — excerpt</figcaption>
+<pre><span class="c">=== tools/call performance_start_trace {"pageId":2,"reload":true,"autoStop":true} ===</span>
+Metrics (lab / observed):
+  - LCP: <b>1794 ms</b>, event: (eventKey: r-12402), nodeId: 36
+  - LCP breakdown:
+    - TTFB: <b>33 ms</b>
+    - Render delay: <b>1,761 ms</b>
+Metrics (field / real users):
+  - LCP: 1256 ms (scope: url)     <span class="c">← CrUX p75, real Chrome users</span>
+  - INP: 74 ms  ·  CLS: 0.00
+
+<span class="c">=== performance_analyze_insight  LCPBreakdown ===</span>
+The LCP element (SPAN, nodeId: 36) is text and was not fetched from the network.
+- Time to first byte:    33 ms  (1.8% of total LCP time)
+- Element render delay: 1,761 ms (98.2% of total LCP time)</pre>
+</figure>
+
+  <div class="col">
+    <p>
+      The lab-vs-field split is the other genuinely useful thing: my throttled lab number
+      (1794 ms) is <em>worse</em> than what real users see (CrUX p75, 1256 ms), which
+      correctly says don't panic — my 4× throttle is harsher than the median visitor. It also
+      means <strong>the URL I profiled was sent to Google's CrUX API.</strong> Fine for public
+      docs; not fine for an internal staging URL, where the URL itself is the leak.
+    </p>
+  </div>
+</section>
+
+<section>
+  <h2>Task 2 — the list renders “Loading…” forever <span class="tag">Part C2</span></h2>
+  <div class="col">
+    <p class="lede">
+      A classic front-end bug hunt against a small local app with two planted defects. I
+      never opened a browser or read the source to diagnose it — only Console and Network.
+    </p>
+  </div>
+
+  <div class="shots">
+    <figure class="shot" style="margin:0">
+      <div class="cap"><span>stage 1 · before</span><span class="state bad">broken</span></div>
+      <img src="data:image/png;base64,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" alt="The Todo board page showing only the text Loading…">
+    </figure>
+    <figure class="shot" style="margin:0">
+      <div class="cap"><span>stage 3 · after</span><span class="state good">fixed</span></div>
+      <img src="data:image/png;base64,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" alt="The Todo board page showing three rendered todo items with checkbox icons.">
+    </figure>
+  </div>
+
+  <h3>Stage 1 — the symptom</h3>
+<pre><span class="c">=== list_console_messages ===</span>
+msgid=1 <span class="r">[error]</span> Failed to load resource: the server responded with a status of 404
+msgid=2 <span class="r">[error]</span> Uncaught (in promise) (0 args)
+  at render (app.js:6:6)
+
+<span class="c">=== list_network_requests ===</span>
+reqid=1 GET http://localhost:8931/          <span class="g">[200]</span>
+reqid=2 GET http://localhost:8931/app.js    <span class="g">[200]</span>
+reqid=3 GET http://localhost:8931/api/todos <span class="r">[404]</span>
+
+<span class="c">=== take_snapshot ===</span>
+uid=1_1 heading "Todo board" level="1"
+uid=1_2 StaticText "Loading…"</pre>
+
+  <div class="col"><p>Diagnosis: <code>/api/todos</code> 404s. The route is <code>/api/todo-list</code>.</p></div>
+
+  <h3>Stage 2 — 200, and still stuck</h3>
+  <div class="col">
+    <p>
+      The fetch now succeeds but the page hasn't changed, and the console error is uselessly
+      terse. So I pulled the actual payload off the wire:
+    </p>
+  </div>
+<pre><span class="c">=== get_network_request {"pageId":2,"reqid":3} ===</span>
+## Request http://localhost:8931/api/todo-list
+Status: <span class="g">200</span>
+### Response Body
+{"<b>todos</b>":[{"id":1,"title":"Write MCP assignment","done":false}, … ]}</pre>
+
+  <div class="col">
+    <p>
+      The payload key is <code>todos</code>. Line 6 of <code>app.js</code> reads
+      <code>data.items</code>. <code>undefined.map(...)</code> — that is the
+      <span class="mono">Uncaught (in promise)</span>. Fix:
+      <code>data.items</code> → <code>data.todos</code>.
+    </p>
+  </div>
+
+  <h3>Stage 3 — verified, not assumed</h3>
+<pre><span class="c">=== take_snapshot ===</span>
+uid=1_2 StaticText "⬜ Write MCP assignment"
+uid=1_3 StaticText "✅ Run a perf trace"
+uid=1_4 StaticText "⬜ Ship the write-up"
+
+<span class="c">=== evaluate_script ===</span>
+{"rendered":<b>3</b>,"text":"⬜ Write MCP assignment\n✅ Run a perf trace\n⬜ Ship the write-up"}
+
+<span class="c">=== list_console_messages {"types":["error","warn"]} ===</span>
+msgid=1 <span class="r">[error]</span> Failed to load resource: 404 (Not Found)   <span class="c">← ?</span></pre>
+
+  <div class="col">
+    <p>
+      One honest loose end: that remaining 404 is <em>not</em> the bug returning. I checked
+      instead of assuming — an unfiltered <code>list_network_requests</code> shows
+      <span class="mono">reqid=4 GET /favicon.ico [404]</span>. My toy server has no favicon.
+      Worth saying out loud, because “verified fixed, one unrelated 404 remains, here's what
+      it is” is the actual standard — and my filtered query had hidden the answer from me.
+    </p>
+  </div>
+</section>
+
+<section>
+  <h2>Three experiments to check my own claims <span class="tag">beyond the brief</span></h2>
+  <div class="col">
+    <p class="lede">
+      Writing the “when to use” section meant asserting things like <em>curl couldn't have
+      told you this</em>. Those are cheap to test, so I tested them instead.
+    </p>
+  </div>
+
+  <div class="exp">
+    <div class="exp-num">Experiment 01</div>
+    <h3>Could <span class="mono">curl</span> have answered Task 1?</h3>
+<pre><span class="c">$ curl -w "ttfb=%{time_starttransfer}s total=%{time_total}s bytes=%{size_download}"</span>
+attempt1  ttfb=0.267102s  total=0.306945s  bytes=89132
+attempt2  ttfb=0.280781s  total=0.307872s  bytes=89132
+attempt3  ttfb=0.213605s  total=0.247151s  bytes=89132</pre>
+    <div class="col">
+      <p>
+        curl's verdict on the exact page from Task 1: responds in ~0.25 s, ships ~87 kB,
+        <strong>nothing to fix</strong>. The trace's verdict on the same page: 98.2% render
+        delay. Both are correct; they measure different things. Render delay happens
+        <em>after</em> curl has hung up — so the cheap tool isn't a weaker version of the
+        expensive one here, it is blind to the actual problem. That cuts both ways, and it's
+        the basis for both sections below.
+      </p>
+    </div>
+  </div>
+
+  <div class="exp">
+    <div class="exp-num">Experiment 02</div>
+    <h3>Does <span class="mono">--slim</span> really shrink the surface?</h3>
+<pre><span class="c">### default</span>            <span class="c">### with --slim</span>
+tool count: <b>29</b>          tool count: <b>3</b>
+                        evaluate, navigate, screenshot
+
+<span class="c">=== tools/call list_pages {} ===</span>
+<span class="r">MCP error -32602: Tool list_pages not found</span></pre>
+    <div class="col">
+      <p>
+        Confirmed — plus a detail the docs omit: the slim tools are <strong>renamed</strong>,
+        not a subset. <code>evaluate</code> / <code>navigate</code> / <code>screenshot</code>,
+        not <code>evaluate_script</code> / <code>navigate_page</code> /
+        <code>take_screenshot</code>. So <code>--slim</code> is not a drop-in for an existing
+        prompt or tool allowlist.
+      </p>
+    </div>
+  </div>
+
+  <div class="exp flag">
+    <div class="exp-num" style="color:var(--warn)">Experiment 03 · changed how I'd configure it</div>
+    <h3>Does <span class="mono">--redactNetworkHeaders</span> actually protect credentials?</h3>
+    <div class="col">
+      <p>
+        I used <code>emulate</code> to inject a <strong>fabricated</strong> bearer token and
+        cookie, reloaded, and read the request back — identical steps, two server configs:
+      </p>
+    </div>
+<pre><span class="c">### A) the default config, the one everybody copies from the README</span>
+## Request http://localhost:8931/
+- authorization:<span class="r">Bearer FAKE-DEMO-TOKEN-NOT-REAL</span>
+- cookie:<span class="r">session=FAKE-DEMO-SESSION</span>
+
+<span class="c">### B) same, plus --redactNetworkHeaders</span>
+## Request http://localhost:8931/
+- authorization:<span class="g">&lt;redacted&gt;</span>
+- cookie:<span class="g">&lt;redacted&gt;</span></pre>
+    <div class="col">
+      <p>
+        <strong>By default, every credential on the page reaches the model in plain text.</strong>
+        The flag works, it covers <code>authorization</code> and <code>cookie</code>, and it
+        is <strong>off unless you ask for it</strong>. Nothing in the README nudges you toward
+        it — I only found it by reading <span class="mono">docs/configuration.md</span>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>When I'd reach for it — and when I wouldn't <span class="tag">Parts D4 · D5</span></h2>
+  <div class="split">
+    <div>
+      <h3 style="color:var(--good)">Reach for it</h3>
+      <p><strong>A performance regression that only shows on real hardware.</strong> A PR lands, mobile LCP goes 1.9 s → 3.4 s, nobody reproduces it on a MacBook.</p>
+      <ul>
+        <li>A Lighthouse score says <em>3.4 s, bad</em> — a number, not a cause.</li>
+        <li>Playwright MCP can drive and screenshot the page, but has no trace recorder, so it can't say where the 1.5 s went.</li>
+        <li>curl measures the server, which in Task 1 was <strong>1.8%</strong> of the problem — measured, in experiment 01.</li>
+      </ul>
+      <p>This server closes the loop in one session: throttle → trace across reload → LCP split into subparts → insights naming the render-blocking requests, third parties and polyfill bytes → fix → re-trace. That's the DevTools workflow minus the human clicking, and it yields <em>a cause with an estimated saving</em>.</p>
+      <p>Second clear win: <strong>any bug whose evidence lives in the browser, not the source</strong> — a path typo, API contract drift like Task 2's <code>items</code>/<code>todos</code>, a CORS preflight, a leak via <code>take_heapsnapshot</code> + <code>compare_heapsnapshots</code>. Reading source to find those is guessing; reading the response body is knowing.</p>
+    </div>
+    <div>
+      <h3 style="color:var(--warn)">Don't</h3>
+      <p><strong>“Check the deploy is live and the API returns the right JSON.”</strong> Use curl. Booting Chrome costs ~5 s of startup, hundreds of MB of RAM and thousands of tokens of tool output — to learn what a 200-byte response already said.</p>
+      <p class="footnote">In fairness, Task 2's stage-1 diagnosis was one curl away too. The server earned its place at stage 2, not stage 1.</p>
+      <ul>
+        <li><strong>You need to drive a browser, not measure one</strong> — multi-step forms, auth journeys, cross-browser. Playwright MCP is better and covers Firefox and WebKit, which this explicitly does not (Chrome and Chrome for Testing only).</li>
+        <li><strong>You already have a failing test.</strong> If the assertion pins the bug, a browser adds only latency.</li>
+        <li><strong>The page needs your logged-in production session.</strong> <code>--isolated</code> gives a blank profile; the workaround, <code>--browserUrl</code> onto your real Chrome, is the thing to think twice about.</li>
+        <li><strong>CI with no Chrome binary.</strong> Hard dependency, not a fallback.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Best practices &amp; what it touches <span class="tag">Part D6</span></h2>
+  <div class="col">
+    <p>
+      Local-only, unauthenticated, no rate limit, no per-call cost. That makes it feel
+      harmless, and that impression is the risk. The README is blunt: it
+      <em>“exposes content of the browser instance to the MCP clients allowing them to
+      inspect, debug, and modify any data in the browser or DevTools.”</em>
+    </p>
+    <p>
+      Concretely an agent holding these tools can read full response bodies including
+      <code>Authorization</code> and session cookies, run arbitrary JS in page context, dump
+      the JS heap, and click or submit anything on screen. There's no OAuth-style scope
+      system — but it is not all-or-nothing either:
+    </p>
+  </div>
+
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Control</th><th>Default</th><th>Effect</th></tr></thead>
+    <tbody>
+      <tr><td><code>--redactNetworkHeaders</code></td><td><code>false</code></td><td>Turns <code>Authorization</code> and <code>Cookie</code> into <code>&lt;redacted&gt;</code> — <strong>verified in experiment 03</strong>.</td></tr>
+      <tr><td><code>--slim</code></td><td><code>false</code></td><td>29 tools → 3 — verified in experiment 02. Far smaller blast radius when you only need to look at a page.</td></tr>
+      <tr><td><code>--no-performance-crux</code></td><td>CrUX on</td><td>Stops trace URLs going to Google's CrUX API. The field-data block in Task 1 <em>is</em> that call happening.</td></tr>
+      <tr><td><code>--no-usage-statistics</code></td><td>stats on</td><td>Opts out of Google's usage collection.</td></tr>
+      <tr><td><code>--filesystemRoot</code></td><td>OS temp</td><td>Bounds where file-writing tools may write. Without negotiated MCP roots, writes are temp-only by default.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="col">
+    <p>
+      A supply-chain note I stumbled on: searching the official MCP registry for
+      “chrome-devtools” returns <strong>two</strong> results — the real
+      <span class="mono">io.github.ChromeDevTools/…</span> and a look-alike
+      <span class="mono">io.github.Async23/…</span> publishing
+      <code>@async23/chrome-devtools-mcp</code> under the same description. Being <em>in</em>
+      the registry is not the same as being <em>the</em> package — verify the npm identifier
+      and GitHub org before installing something whose whole job is reading everything in
+      your browser.
+    </p>
+    <p>
+      And treat page content as untrusted input. Response bodies and console text come from
+      whatever site you loaded; an attacker-controlled page can print instructions aimed at
+      the agent. Read them as data, never as commands.
+    </p>
+  </div>
+
+  <h3>The failure mode I actually hit</h3>
+  <div class="col">
+    <p>
+      <strong>Console errors arrive stripped of their message text.</strong> The real error in
+      Task 2 stage 2 was a <code>TypeError: Cannot read properties of undefined (reading
+      'map')</code>. What both <code>list_console_messages</code> and the detail call
+      <code>get_console_message</code> reported was:
+    </p>
+  </div>
+<pre>msgid=1 <span class="r">[error]</span> Uncaught (in promise) <span class="w">(0 args)</span>
+  at render (app.js:6:6)</pre>
+  <div class="col">
+    <p>
+      <span class="mono">(0 args)</span> — the exception object never crossed the wire. An
+      agent trusting the console alone would have a location and no cause, and would very
+      plausibly start guessing at line 6.
+    </p>
+    <p>
+      <strong>The guard:</strong> never let the console be the sole source of truth.
+      Corroborate from a second tool — <code>get_network_request</code> gave me the body, and
+      <code>{"todos":[…]}</code> against a line reading <code>data.items</code> made the
+      TypeError obvious without ever seeing its text. Generalised:
+      <strong>console tells you <em>where</em>; network and <code>evaluate_script</code> tell
+      you <em>why</em>.</strong> Where the text genuinely matters, wrap the call site
+      yourself: <code>evaluate_script</code> with
+      <code>() =&gt; { try { … } catch (e) { return e.message } }</code>.
+    </p>
+  </div>
+</section>
+
+<section>
+  <h2>Run it yourself <span class="tag">one command</span></h2>
+  <div class="run">
+    <div class="col">
+      <p style="margin-bottom:var(--s2)">From the project root — Windows:</p>
+    </div>
+<pre>run.cmd</pre>
+    <div class="col"><p style="margin-bottom:var(--s2)">macOS, Linux or Git Bash:</p></div>
+<pre>./run.sh</pre>
+    <div class="col">
+      <p>
+        It installs the pinned server if needed, starts the demo app, replays Task 1 and all
+        three stages of Task 2 with a banner before each saying what to expect, restores
+        <code>app.js</code> to its broken state, and stops the server. No second terminal.
+        <code>run.cmd task1</code> or <code>run.cmd task2</code> narrows it.
+      </p>
+      <p class="footnote">
+        Verified from a clean copy of the folder, twice. Task 1 profiles a live site, so its
+        numbers move between runs — a later run measured LCP 2,704 ms with 99.0% render
+        delay: different figure, identical conclusion.
+      </p>
+    </div>
+  </div>
+
+  <h3>Where the evidence lives</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>File</th><th>Contents</th></tr></thead>
+    <tbody>
+      <tr><td><code>evidence/task1b.log</code></td><td>Mobile-throttled trace + three insight drill-downs</td></tr>
+      <tr><td><code>evidence/task2*.log</code></td><td>The three debugging stages, raw</td></tr>
+      <tr><td><code>evidence/exp-*.txt</code></td><td>The curl comparison, the slim probe, the redaction A/B</td></tr>
+      <tr><td><code>evidence/claude-mcp-status.txt</code></td><td><code>claude mcp list</code> showing <span class="mono">✔ Connected</span></td></tr>
+      <tr><td><code>harness/</code></td><td>The MCP stdio client, the task files, the demo app</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="col">
+    <p class="footnote">
+      <strong>One thing I could not capture.</strong> I tried to record Claude Code's own MCP
+      client calling these tools headlessly, to make the evidence independent of my harness.
+      A second non-interactive CLI session can't borrow the running app's credentials —
+      <span class="mono">Failed to authenticate: OAuth session expired</span>. So: the server,
+      binary, arguments and protocol are exactly what <code>.mcp.json</code> specifies and
+      every byte above is real, but the client issuing these particular calls is my ~90-line
+      stdio client. Claude Code itself <em>does</em> connect to this config
+      (<span class="mono">✔ Connected</span>, above) — driving it from an interactive session
+      is a live demo, not a captured one.
+    </p>
+  </div>
+</section>
+
+<hr class="rule">
+<p class="footnote" style="margin-top:var(--s3)">
+  All figures read live from the GitHub, npm, Smithery and MCP registry APIs on 2026-09-08.
+  No API keys, tokens or credentials appear in this dossier or the repository — the bearer
+  token in experiment 03 is a fabricated demo value. Full write-up in
+  <span class="mono">WRITEUP.md</span>.
+</p>
+
+</div>

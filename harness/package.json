@@ -1,0 +1,15 @@
+{
+  "name": "chrome-devtools-mcp-harness",
+  "private": true,
+  "type": "module",
+  "description": "Minimal MCP stdio client used to drive chrome-devtools-mcp and capture raw tool output.",
+  "scripts": {
+    "demo": "node run.mjs all",
+    "task1": "node run.mjs task1",
+    "task2": "node run.mjs task2",
+    "serve": "node demo-app/server.mjs"
+  },
+  "dependencies": {
+    "chrome-devtools-mcp": "1.8.0"
+  }
+}

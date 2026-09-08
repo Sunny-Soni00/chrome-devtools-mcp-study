@@ -1,0 +1,146 @@
+=== initialize ===
+{"name":"chrome_devtools","title":"Chrome DevTools MCP server","version":"1.8.0"} protocol: 2025-06-18
+=== tools/list ===
+tool count: 29
+click, close_page, drag, emulate, evaluate_script, fill, fill_form, get_console_message, get_network_request, handle_dialog, hover, lighthouse_audit, list_console_messages, list_network_requests, list_pages, navigate_page, new_page, performance_analyze_insight, performance_start_trace, performance_stop_trace, press_key, resize_page, select_page, take_heapsnapshot, take_screenshot, take_snapshot, type_text, upload_file, wait_for
+
+=== tools/call new_page {"url":"https://modelcontextprotocol.io/docs/getting-started/intro"} ===
+(1743 ms)
+## Pages
+1: about:blank
+2: What is the Model Context Protocol (MCP)? - Mod... (https://modelcontextprotocol.io/docs/2026-07-28/getting-started/intro) [selected]
+
+=== tools/call emulate {"pageId":2,"cpuThrottlingRate":4,"networkConditions":"Slow 4G","viewport":"412x915"} ===
+(234 ms)
+Emulation configured successfully
+Emulating network conditions: Slow 4G
+Default navigation timeout set to 100000 ms
+Emulating viewport: {"isMobile":false,"hasTouch":false,"isLandscape":false,"width":412,"height":915}
+Emulating CPU throttling: 4x slowdown
+
+=== tools/call performance_start_trace {"pageId":2,"reload":true,"autoStop":true} ===
+(12268 ms)
+The performance trace has been stopped.
+Emulating network conditions: Slow 4G
+Default navigation timeout set to 100000 ms
+Emulating viewport: {"isMobile":false,"hasTouch":false,"isLandscape":false,"width":412,"height":915}
+Emulating CPU throttling: 4x slowdown
+## Summary of Performance trace findings:
+URL: https://modelcontextprotocol.io/docs/2026-07-28/getting-started/intro
+Trace bounds: {min: 726996053493µs, max: 727004147276µs}
+CPU throttling: 4x
+Network throttling: Slow 4G
+
+# Available insight sets
+
+The following is a list of insight sets. An insight set covers a specific part of the trace, split by navigations. The insights within each insight set are specific to that part of the trace. Be sure to consider the insight set id and bounds when calling functions. If no specific insight set or navigation is mentioned, assume the user is referring to the first one.
+
+## insight set id: NAVIGATION_0
+
+URL: https://modelcontextprotocol.io/docs/2026-07-28/getting-started/intro
+Bounds: {min: 726996057748µs, max: 727004147276µs}
+Metrics (lab / observed):
+  - LCP: 1794 ms, event: (eventKey: r-12402, ts: 726997851750), nodeId: 36
+  - LCP breakdown:
+    - TTFB: 33 ms, bounds: {min: 726996057748µs, max: 726996090623µs}
+    - Render delay: 1,761 ms, bounds: {min: 726996090623µs, max: 726997851750µs}
+  - CLS: 0.00
+Metrics (field / real users):
+  - LCP: 1256 ms (scope: url)
+  - LCP breakdown:
+    - TTFB: 477 ms (scope: url)
+    - Load delay: 434 ms (scope: url)
+    - Load duration: 279 ms (scope: url)
+    - Render delay: 128 ms (scope: url)
+  - INP: 74 ms (scope: url)
+  - CLS: 0.00 (scope: url)
+  - The above data is from CrUX–Chrome User Experience Report. It's how the page performs for real users.
+  - The values shown above are the p75 measure of all real Chrome users
+  - The scope indicates if the data came from the entire origin, or a specific url
+  - Lab metrics describe how this specific page load performed, while field metrics are an aggregation of results from real-world users. Best practice is to prioritize metrics that are bad in field data. Lab metrics may be better or worse than fields metrics depending on the developer's machine, network, or the actions performed while tracing.
+Available insights:
+  - insight name: LCPBreakdown
+
+=== tools/call performance_analyze_insight {"pageId":2,"insightSetId":"NAVIGATION_0","insightName":"LCPBreakdown"} ===
+(2 ms)
+Emulating network conditions: Slow 4G
+Default navigation timeout set to 100000 ms
+Emulating viewport: {"isMobile":false,"hasTouch":false,"isLandscape":false,"width":412,"height":915}
+Emulating CPU throttling: 4x slowdown
+## Insight Title: LCP breakdown
+
+## Insight Summary:
+This insight is used to analyze the time spent that contributed to the final LCP time and identify which of the 4 subparts (or 2 if there was no LCP resource) are contributing most to the delay in rendering the LCP element.
+
+## Detailed analysis:
+The Largest Contentful Paint (LCP) time for this navigation was 1,794 ms.
+The LCP element (SPAN, nodeId: 36) is text and was not fetched from the network.
+
+We can break this time down into the 2 subparts that combine to make the LCP time:
+
+- Time to first byte: 33 ms (1.8% of total LCP time)
+- Element render delay: 1,761 ms (98.2% of total LCP time)
+
+## Estimated savings: none
+
+## External resources:
+- https://developer.chrome.com/docs/performance/insights/lcp-breakdown
+- https://web.dev/articles/lcp
+- https://web.dev/articles/optimize-lcp
+
+=== tools/call performance_analyze_insight {"pageId":2,"insightSetId":"NAVIGATION_0","insightName":"ThirdParties"} ===
+(2 ms)
+Emulating network conditions: Slow 4G
+Default navigation timeout set to 100000 ms
+Emulating viewport: {"isMobile":false,"hasTouch":false,"isLandscape":false,"width":412,"height":915}
+Emulating CPU throttling: 4x slowdown
+## Insight Title: 3rd parties
+
+## Insight Summary:
+This insight analyzes the performance impact of resources loaded from third-party servers and aggregates the performance cost, in terms of download transfer sizes and total amount of time that third party scripts spent executing on the main thread.
+
+## Detailed analysis:
+The following list contains the largest transfer sizes by a 3rd party script:
+
+- mintcdn.com: 10.4 kB
+- cloudfront.net: 1.9 kB
+
+The following list contains the largest amount spent by a 3rd party script on the main thread:
+
+- Cloudflare: 57 ms
+
+3rd party code can significantly impact load performance. [Reduce and defer loading of 3rd party code](https://developer.chrome.com/docs/performance/insights/third-parties) to prioritize your page’s content.
+
+## Estimated savings: none
+
+## External resources:
+- https://developer.chrome.com/docs/performance/insights/third-parties
+- https://web.dev/articles/optimizing-content-efficiency-loading-third-party-javascript/
+
+=== tools/call performance_analyze_insight {"pageId":2,"insightSetId":"NAVIGATION_0","insightName":"LegacyJavaScript"} ===
+(1 ms)
+Emulating network conditions: Slow 4G
+Default navigation timeout set to 100000 ms
+Emulating viewport: {"isMobile":false,"hasTouch":false,"isLandscape":false,"width":412,"height":915}
+Emulating CPU throttling: 4x slowdown
+## Insight Title: Legacy JavaScript
+
+## Insight Summary:
+This insight identified legacy JavaScript in your application's modules that may be creating unnecessary code.
+
+Polyfills and transforms enable older browsers to use new JavaScript features. However, many are not necessary for modern browsers. Consider modifying your JavaScript build process to not transpile Baseline features, unless you know you must support older browsers.
+
+## Detailed analysis:
+Total legacy JavaScript: 2 files.
+
+Legacy JavaScript by file:
+
+- Script: https://modelcontextprotocol.io/mintlify-assets/_next/static/chunks/f486afc314643ce1.js?dpl=dpl_uYSKKHzcGLnttFjzDWkK73xkFNcv (eventKey: s-3852, ts: 726996689065) - Wasted bytes: 14449 bytes
+Matches:
+Line: 0, Column: 4193, Name: Array.prototype.at
+Line: 0, Column: 3581, Name: Array.prototype.flat
+Line: 0, Column: 3694, Name: Array.prototype.flatMap
+Line: 0, Column: 4070, Name: Object.fromEntries
+Line: 0, Column: 4328, Name: Object.hasOwn
+Line: 0, Column: 3323, Name: String.prototype.trimEnd
+Line: 0, Column: 3238, Name: String.prototype.trimStart

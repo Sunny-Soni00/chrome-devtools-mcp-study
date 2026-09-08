@@ -1,0 +1,15 @@
+$ claude mcp get chrome-devtools
+chrome-devtools:
+  Scope: Project config (shared via .mcp.json)
+  Status: ✔ Connected
+  Type: stdio
+  Command: npx
+  Args: -y chrome-devtools-mcp@1.8.0 --headless=true --isolated=true
+  Environment:
+
+To remove this server, run: claude mcp remove chrome-devtools -s project
+
+$ claude mcp list
+Checking MCP server health…
+
+chrome-devtools: npx -y chrome-devtools-mcp@1.8.0 --headless=true --isolated=true - ✔ Connected

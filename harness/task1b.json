@@ -1,0 +1,8 @@
+[
+  {"name":"new_page","arguments":{"url":"https://modelcontextprotocol.io/docs/getting-started/intro"}},
+  {"name":"emulate","arguments":{"pageId":2,"cpuThrottlingRate":4,"networkConditions":"Slow 4G","viewport":"412x915"}},
+  {"name":"performance_start_trace","arguments":{"pageId":2,"reload":true,"autoStop":true},"head":40},
+  {"name":"performance_analyze_insight","arguments":{"pageId":2,"insightSetId":"NAVIGATION_0","insightName":"LCPBreakdown"},"head":40},
+  {"name":"performance_analyze_insight","arguments":{"pageId":2,"insightSetId":"NAVIGATION_0","insightName":"ThirdParties"},"head":30},
+  {"name":"performance_analyze_insight","arguments":{"pageId":2,"insightSetId":"NAVIGATION_0","insightName":"LegacyJavaScript"},"head":25}
+]

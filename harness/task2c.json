@@ -1,0 +1,6 @@
+[
+  {"name":"new_page","arguments":{"url":"http://localhost:8931/"}},
+  {"name":"list_console_messages","arguments":{"pageId":2,"includeStackTraces":true}},
+  {"name":"get_console_message","arguments":{"pageId":2,"msgid":1}},
+  {"name":"get_network_request","arguments":{"pageId":2,"reqid":3},"head":40}
+]
